@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  id            BigInt       @id @default(autoincrement())
+  restaurant_id BigInt
+  name          String       @db.VarChar(80)
+  description   String?
+  restaurants   restaurants  @relation(fields: [restaurant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  menu_items    menu_items[]
+
+  @@unique([restaurant_id, name])
+  @@index([restaurant_id], map: "idx_categories_rest")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model menu_items {
+  id            BigInt        @id @default(autoincrement())
+  restaurant_id BigInt
+  category_id   BigInt
+  name          String        @db.VarChar(120)
+  description   String?
+  price         Decimal       @db.Decimal(10, 2)
+  image_url     String?       @db.VarChar(500)
+  is_available  Boolean       @default(true)
+  created_at    DateTime      @default(now()) @db.Timestamp(6)
+  categories    categories    @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  restaurants   restaurants   @relation(fields: [restaurant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  order_items   order_items[]
+
+  @@index([category_id], map: "idx_menu_category")
+  @@index([restaurant_id], map: "idx_menu_restaurant")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model order_items {
+  id           BigInt     @id @default(autoincrement())
+  order_id     BigInt
+  menu_item_id BigInt
+  quantity     Int
+  unit_price   Decimal    @db.Decimal(10, 2)
+  menu_items   menu_items @relation(fields: [menu_item_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  orders       orders     @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([order_id], map: "idx_order_items_order")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model orders {
+  id                            BigInt        @id @default(autoincrement())
+  client_id                     BigInt
+  restaurant_id                 BigInt
+  driver_id                     BigInt?
+  status                        String        @default("PENDING") @db.VarChar(15)
+  phone                         String        @db.VarChar(20)
+  latitude                      Float
+  longitude                     Float
+  address_details               String?       @db.VarChar(255)
+  payment_method                String        @db.VarChar(10)
+  payment_status                String        @default("UNPAID") @db.VarChar(10)
+  total                         Decimal       @db.Decimal(10, 2)
+  created_at                    DateTime      @default(now()) @db.Timestamp(6)
+  accepted_at                   DateTime?     @db.Timestamp(6)
+  delivered_at                  DateTime?     @db.Timestamp(6)
+  order_items                   order_items[]
+  users_orders_client_idTousers users         @relation("orders_client_idTousers", fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_orders_driver_idTousers users?        @relation("orders_driver_idTousers", fields: [driver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  restaurants                   restaurants   @relation(fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payments                      payments[]
+
+  @@index([client_id], map: "idx_orders_client")
+  @@index([driver_id], map: "idx_orders_driver")
+  @@index([restaurant_id], map: "idx_orders_restaurant")
+  @@index([status], map: "idx_orders_status")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model payments {
+  id                    BigInt    @id @default(autoincrement())
+  order_id              BigInt
+  amount                Decimal   @db.Decimal(10, 2)
+  method                String    @db.VarChar(10)
+  status                String    @db.VarChar(10)
+  transaction_reference String?   @db.VarChar(100)
+  paid_at               DateTime? @db.Timestamp(6)
+  orders                orders    @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model restaurants {
+  id          BigInt       @id @default(autoincrement())
+  name        String       @db.VarChar(120)
+  description String?
+  address     String?      @db.VarChar(255)
+  phone       String?      @db.VarChar(20)
+  logo_url    String?      @db.VarChar(500)
+  latitude    Float?
+  longitude   Float?
+  is_open     Boolean      @default(true)
+  is_active   Boolean      @default(true)
+  created_at  DateTime     @default(now()) @db.Timestamp(6)
+  categories  categories[]
+  menu_items  menu_items[]
+  orders      orders[]
+  users       users[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id                             BigInt       @id @default(autoincrement())
+  restaurant_id                  BigInt?
+  full_name                      String       @db.VarChar(100)
+  email                          String       @unique @db.VarChar(150)
+  phone                          String       @db.VarChar(20)
+  password_hash                  String       @db.VarChar(255)
+  role                           String       @db.VarChar(12)
+  is_active                      Boolean      @default(true)
+  created_at                     DateTime     @default(now()) @db.Timestamp(6)
+  orders_orders_client_idTousers orders[]     @relation("orders_client_idTousers")
+  orders_orders_driver_idTousers orders[]     @relation("orders_driver_idTousers")
+  restaurants                    restaurants? @relation(fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([restaurant_id], map: "idx_users_restaurant")
+}
