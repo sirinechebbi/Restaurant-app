@@ -1,0 +1,48 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #f4f5f7; color: #1f2937; }
+h1 { margin: 0 0 20px; }
+
+button { cursor: pointer; border: 0; border-radius: 6px; padding: 8px 14px; background: #2563eb; color: #fff; font-size: 14px; }
+button.secondary { background: #e5e7eb; color: #1f2937; }
+button.danger { background: #dc2626; }
+button:disabled { opacity: .6; cursor: default; }
+input, select { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: inherit; }
+
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; background: #111827; color: #fff; padding: 20px; display: flex; flex-direction: column; }
+.sidebar h2 { margin: 0; }
+.sidebar nav { display: flex; flex-direction: column; gap: 4px; margin-top: 24px; flex: 1; }
+.sidebar a { color: #d1d5db; text-decoration: none; padding: 10px 12px; border-radius: 6px; }
+.sidebar a.active { background: #2563eb; color: #fff; }
+.sidebar-footer { display: flex; flex-direction: column; gap: 8px; }
+.content { flex: 1; padding: 28px; overflow-x: auto; }
+
+.card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.card h3 { margin-top: 0; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.row input, .row select { flex: 1; min-width: 140px; }
+
+table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e5e7eb; font-size: 14px; vertical-align: middle; }
+th { color: #6b7280; font-weight: 600; }
+td .row { flex-wrap: nowrap; }
+.details { background: #f9fafb; }
+.muted { color: #6b7280; font-size: 12px; }
+
+.error { background: #fee2e2; color: #991b1b; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; }
+.success { background: #dcfce7; color: #166534; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; }
+
+.badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; background: #e5e7eb; white-space: nowrap; }
+.badge.PENDING { background: #fef3c7; }
+.badge.ACCEPTED { background: #dbeafe; }
+.badge.ON_DELIVERY { background: #e0e7ff; }
+.badge.DELIVERED { background: #dcfce7; }
+.badge.CANCELLED { background: #fee2e2; }
+
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; background: #e5e7eb; border-radius: 999px; padding: 4px 6px 4px 12px; font-size: 14px; }
+.chip-x { background: transparent; color: #6b7280; padding: 0 6px; font-size: 16px; }
+
+.login-wrap { min-height: 100vh; display: grid; place-items: center; }
+.login-card { width: 360px; display: flex; flex-direction: column; gap: 12px; }
+.login-card h2 { margin: 0; }
